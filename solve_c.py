@@ -37,7 +37,7 @@ def solve(seed, inp, log):
     # TODO: Solve the problem
     random.seed(seed)
     ns = parse(inp)
-    out=[]
+    outpre=[]
     Srvs = [Server(i) for i in range(ns.S)]
     rm=-1
     for targ in ns.targets:
@@ -65,11 +65,11 @@ def solve(seed, inp, log):
             for s in Srvs:
                 for c, dep in DEPS[s.id]:
                     s.add_compilation(dep, ns)
-                    out.append('{} {}'.format(ns.compilable[dep].name, s.id))
+                    outpre.append('{} {}'.format(ns.compilable[dep].name, s.id))
             Srvs[0].add_compilation(F.i, ns)
             print(" ".join(str(s.t) for s in Srvs))
-            out.append('{} {}'.format(F.name, 0))
+            outpre.append('{} {}'.format(F.name, 0))
             rm=targ
             break
-    ns.targets.remove(rm)
-    return '\n'.join([str(len(out))] + out)
+
+    return '\n'.join([str(len(outpre))] + outpre)
