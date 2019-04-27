@@ -60,26 +60,38 @@ def solve(seed, inp, log):
             used[server_id].append((best,best+file.c))
             used[server_id].sort()
         return False
-    for targ_ii,target in enumerate(ns.targets):
-        if ((targ_ii+1)*100/ns.T)%5 == 0 and ((targ_ii)*100/ns.T)%5 != 0:
-            print '{} % of targets done'.format(((targ_ii+1)*100/ns.T))
-        comp = target.get_comp(ns)
-        all_deps = sorted(list(comp.deps))
-        cur_used = [] #(server,(interval))
-        cur_comp_files = [list(x) for x in comp_files]
+    while ns.targets:
+        print 'Number of targets left: {}'.format(len(ns.targets))
+        best = INF
+        best_ccf, best_cu = [],[]
+        best_target = None
+        torem = []
+        for target in ns.targets:
+            comp = target.get_comp(ns)
+            all_deps = sorted(list(comp.deps))
+            cur_used = [] #(server,(interval))
+            cur_comp_files = [list(x) for x in comp_files]
 
-        fail = False
-        for dep in all_deps:
-            dep_comp = ns.compilable[dep]
-            fail &= update_best_server(dep_comp)
-        fail &= update_best_server(comp)
-        if min([cur_comp_files[s][comp.i] for s in range(ns.S)]) > target.d: fail = True
-        if fail:
+            fail = False
+            for dep in all_deps:
+                dep_comp = ns.compilable[dep]
+                fail &= update_best_server(dep_comp)
+            fail &= update_best_server(comp)
+            finish_time = min([cur_comp_files[s][comp.i] for s in range(ns.S)])
+            if finish_time > target.d: fail = True
             reset(cur_used)
-        else:
-            comp_files = cur_comp_files
-            for server,interval,dep_comp in cur_used:
+            if fail:
+                torem.append(target)
+            elif finish_time < best:
+                best,best_ccf,best_cu,best_target = finish_time,cur_comp_files,cur_used,target
+        if best != INF:
+            comp_files = best_ccf
+            for server,interval,dep_comp in best_cu:
+                used[server].append(interval)
+                used[server].sort()
                 out_ish[server][interval] = dep_comp
+            ns.targets.remove(best_target)
+        for rm in torem: ns.targets.remove(rm)
     out = []
     for server in range(ns.S):
         for interval in out_ish[server]:
