@@ -3,7 +3,7 @@ import random
 from score import parse, nl, ni
 import sys
 
-# ns is the namespace. 
+# ns is the namespace.
 # If needed write a simple parser which returns ns.
 # If simple parser should be used run the program with extra argument ('sp')
 def test(inp):
@@ -12,7 +12,7 @@ def test(inp):
     # Use parse from score, or write your own (simple_parse)
 
 def simple_parse(inp):
-    itr = (line for line in inp.split('\n'))
+    itr = inp.split('\n')
     ns = argparse.Namespace()
     return ns
 
