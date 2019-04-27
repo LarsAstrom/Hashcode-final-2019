@@ -7,8 +7,13 @@ import sys
 # If needed write a simple parser which returns ns.
 # If simple parser should be used run the program with extra argument ('sp')
 def test(inp):
-    ns = simple_parse(inp)
-    print "C: {}, T: {}, S: {}, sumG: {}".format(ns.C,ns.T,ns.S,ns.sumg)
+    ns = parse(inp)
+    sumg=0
+    maxd=0
+    for t in ns.targets:
+        sumg+=t.g
+        maxd=max(maxd,t.d)
+    print "C: {}, T: {}, S: {}, sumG: {}, maxD: {}".format(ns.C,ns.T,ns.S,sumg, maxd)
     # TODO: Write the tests to print given inp.
     # Use parse from score, or write your own (simple_parse)
 
@@ -17,6 +22,7 @@ def simple_parse(inp):
     ns = argparse.Namespace()
     ns.C, ns.T, ns.S = map(int,itr[0].split())
     ns.sumg = 0
+
     for line in itr[2*ns.C+1:2*ns.C+1+ns.T]:
         s,d,g = line.split()
         ns.sumg+=int(g)
