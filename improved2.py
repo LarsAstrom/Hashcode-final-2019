@@ -20,7 +20,7 @@ def solve(seed, inp, log):
         return sum(ns.compilable[dep].c for dep in File.deps)
     ns.targets.sort(key=totalTime)
     '''
-    ns.targets.sort(key=lambda x:-x.d)
+
     def is_compable(comp,s,t):
         for dep in comp.orig_deps:
             if cur_comp_files[s][dep]>t: return False
@@ -63,6 +63,9 @@ def solve(seed, inp, log):
     picked = 0
     #bjorn = 15
     bjorn=seed
+    ns.targets.sort(key=lambda x:-x.d)
+    def srting(finish_time,target.d,target.g):
+        
     tgs1 = ns.targets[:bjorn]
     tgs2 = ns.targets[bjorn:]
     while tgs1:
@@ -83,7 +86,7 @@ def solve(seed, inp, log):
                 fail &= update_best_server(dep_comp)
             fail &= update_best_server(comp)
             finish_time = min([cur_comp_files[s][comp.i] for s in range(ns.S)])
-            srt = finish_time
+            srt = srting(finish_time,target.d,target.g)
             if finish_time > target.d: fail = True
             reset(cur_used)
             if fail:
@@ -117,7 +120,7 @@ def solve(seed, inp, log):
                 fail &= update_best_server(dep_comp)
             fail &= update_best_server(comp)
             finish_time = min([cur_comp_files[s][comp.i] for s in range(ns.S)])
-            srt = finish_time
+            srt = srting(finish_time,target.d,target.g)
             if finish_time > target.d: fail = True
             reset(cur_used)
             if fail:
