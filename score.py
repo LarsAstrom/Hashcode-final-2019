@@ -20,11 +20,34 @@ def ni(itr):
 def nl(itr):
     return [int(v) for v in next(itr).split()]
 
+class Compilable:
+    def __init__(self, i, name, c, r, deps):
+        self.i = i
+        self.name = name
+        self.c = c
+        self.r = r
+        self.deps = deps
+class Target:
+    def __init__(self, name, d, g):
+        self.name = name
+        self.d = d
+        self.g = g
 
 def parse(inp):
     itr = (line for line in inp.split('\n'))
     ns = argparse.Namespace()
-    # TODO: fill ns
+    ns.C, ns.T, ns.S = nl(itr)
+    ns.compilable = []
+    ns.name2id = {}
+    for i in range(ns.C):
+        name, c, r = next(itr).split()
+        ns.name2id[name] = i
+        deps = [ns.name2id[n] for n in next(itr).split()[1:]]
+        ns.compilable.append(Compilable(i, name, int(c), int(r), deps))
+    ns.targets = []
+    for i in range(ns.T):
+        name, d, g = next(itr).split()
+        ns.targets.append(Target(name, int(d), int(g)))
 
     return ns
 
