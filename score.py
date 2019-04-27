@@ -28,15 +28,20 @@ class Compilable:
         self.name = name
         self.c = c
         self.r = r
+        self.orig_deps = set(deps)
         self.deps = set(deps)
         for d in deps:
             self.deps |= ns.compilable[d].deps
 
+
 class Target:
-    def __init__(self, name, d, g):
+    def __init__(self, i, name, d, g):
         self.name = name
         self.d = d
         self.g = g
+        self.i = i
+    def get_comp(self, ns):
+        return ns.compilable[ns.name2id[self.name]]
 
 def parse(inp):
     itr = (line for line in inp.split('\n'))
@@ -52,7 +57,7 @@ def parse(inp):
     ns.targets = []
     for i in range(ns.T):
         name, d, g = next(itr).split()
-        ns.targets.append(Target(name, int(d), int(g)))
+        ns.targets.append(Target(i, name, int(d), int(g)))
 
     ns.avil = {}
 
