@@ -11,7 +11,32 @@ def solve(seed, inp, log):
     sourcefiles=set()
     targetfiles=set()
     for targ in ns.targets:
-        if len(targ.deps)>100:
-            print "inte 100", targ.name
+        comp = targ.get_comp(ns)
+        if len(comp.deps)!=len(comp.orig_deps):
+            print "inte samma", comp.name, len(comp.deps)
+    #Alla targets har bara djup 1 av dependencies.
+    takeable = []
+    for targ in ns.targets:
+        comp = targ.get_comp(ns)
+        tottime=0
+        for depid in comp.deps:
+            dep = ns.compilable[depid]
+            tottime+=dep.c
+        if comp.c <= targ.d:
+            print "kan ta", tottime, comp.c, targ.d
+            takeable.append(targ)
 
-    return ''
+    print len(takeable)
+    out = []
+    for i in range(75):
+        targ = takeable[i]
+        comp = targ.get_comp(ns)
+        tottime=0
+        for depid in comp.deps:
+            dep = ns.compilable[depid]
+            out.append(dep.name + " " + str(i))
+        out.append(comp.name + " " + str(i))
+    outstr=str(len(out))
+    outstr2="\n".join(out)
+
+    return outstr+"\n" + outstr2
