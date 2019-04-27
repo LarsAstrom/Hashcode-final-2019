@@ -12,18 +12,16 @@ def test(inp):
     maxd=0
     min_dep = (10**10, -1)
     max_dep = (0, -1)
+    deps = []
     for t in ns.targets:
         sumg+=t.g
         maxd=max(maxd,t.d)
         F = t.get_comp(ns)
-        min_dep = min(min_dep, (len(F.deps), t.i))
-        max_dep = max(max_dep, (len(F.deps), t.i))
+        deps.append((len(F.deps), t.i, t.g, t.d))
     print "C: {}, T: {}, S: {}, sumG: {}, maxD: {}".format(ns.C,ns.T,ns.S,sumg, maxd)
-    print('min_dep: {}'.format(min_dep))
-    print('max_dep: {}'.format(max_dep))
-    T = ns.targets[min_dep[1]]
-    F = T.get_comp(ns)
-    print('G {}, D {}, T_ID {}, F_ID {}, C {}, R {}'.format(T.g, T.d, T.i, F.i, F.c, F.r))
+    deps.sort()
+    for d in deps[:20]:
+        print(d)
     # TODO: Write the tests to print given inp.
     # Use parse from score, or write your own (simple_parse)
 
