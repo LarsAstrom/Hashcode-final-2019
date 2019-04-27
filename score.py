@@ -100,15 +100,19 @@ def score(inp, out):
         f_id = ns.name2id[name]
         Srvs[s_id].add_compilation(f_id, ns)
     tot = 0
-    picked = 0
+    picked = []
+    goal, speed = 0, 0
     for targ in ns.targets:
         targ_id = ns.name2id[targ.name]
         if targ_id in ns.avil:
             time = ns.avil[targ_id] - ns.compilable[targ_id].r
             if time <= targ.d:
+                goal += targ.g
+                speed += targ.d - time
                 tot += targ.g - time + targ.d 
-                picked += 1
-    print('picked {}'.format(picked))
+                picked.append(targ.d)
+    print('picked {}'.format(len(picked)))
+    print(goal, speed)
     return tot
 
 

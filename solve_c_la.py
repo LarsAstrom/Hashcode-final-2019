@@ -45,8 +45,6 @@ def solve(seed, inp, log):
         t = targ
         F = t.get_comp(ns)
         if len(comp.deps)==len(comp.orig_deps)==100:
-            print "--------"
-            print len(comp.deps), len(comp.orig_deps), targ.d, targ.g
             tottime=0
             deps=[]
             for dep in comp.deps:
@@ -59,15 +57,12 @@ def solve(seed, inp, log):
                 sums.append(sum(c for c, _ in DEPS[-1]))
                 deps = [d for d in deps if d not in DEPS[-1]]
             if deps:
-                print deps
-                print sums
                 continue
             for s in Srvs:
                 for c, dep in DEPS[s.id]:
                     s.add_compilation(dep, ns)
                     outpre.append('{} {}'.format(ns.compilable[dep].name, s.id))
             Srvs[0].add_compilation(F.i, ns)
-            print(" ".join(str(s.t) for s in Srvs))
             outpre.append('{} {}'.format(F.name, 0))
             rm=targ
             break
@@ -117,13 +112,13 @@ def solve(seed, inp, log):
             comp_files[s][file.i] = min(start+file.c+file.r, comp_files[s][file.i])
         used[server].append(interval)
         out_ish[server][interval] = file
-'''
-    def totalTime(target):
-        File = ns.compilable[ns.name2id[target.name]]
-        return sum(ns.compilable[dep].c for dep in File.deps)
-    ns.targets.sort(key=totalTime)
-'''
-    #ns.targets.sort(key=lambda x:x.d) current best
+
+    #ns.targets.sort(key=lambda x: -x.d)
+    ns.targets.sort(key=lambda x:x.d) #current best
+    sz = 5
+    v = ns.targets[-sz:]
+    random.shuffle(v)
+    ns.targets = ns.targets[:-sz] + v
 
     def reset(cur_used):
         for server,interval,_ in cur_used:

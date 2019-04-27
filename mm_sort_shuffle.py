@@ -15,10 +15,10 @@ def solve(seed, inp, log):
     comp_files = [[INF]*ns.C for _ in range(ns.S)] #comp_files[server][file] = time_for_avail
     used = [[] for _ in range(ns.S)] #used[server] = [(intervals when used)]
     ns.targets.sort(key=lambda x:-x.d)
-    sz = 5
-    v = ns.targets[sz:]
+    sz = 17
+    v = ns.targets[:sz]
     random.shuffle(v)
-    ns.targets = ns.targets[:sz] + v
+    ns.targets = v + ns.targets[sz:]
     def is_compable(comp,s,t):
         for dep in comp.orig_deps:
             if cur_comp_files[s][dep]>t: return False
