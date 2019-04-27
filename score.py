@@ -8,6 +8,8 @@ try:
 except:
     from configparser import ConfigParser
 
+from collections import *
+
 
 def show(out):
     # TODO: Print the solution here
@@ -49,7 +51,31 @@ def parse(inp):
         name, d, g = next(itr).split()
         ns.targets.append(Target(name, int(d), int(g)))
 
+    ns.avil = {}
+
     return ns
+
+class Server:
+    def __init__(self):
+        self.t = 0
+        self.compiled = set()
+    def add_compilation(i, ns):
+        ok = True
+        start = self.t
+        File = ns.compilable[i]
+        for dep in File.deps:
+            if dep in self.compiled: continue
+            else:
+                assert dep in ns.avil, "file {} not ready".format(dep)
+                start = max(start, ns.avil[dep])
+        self.compiled.add(i)
+        self.t = start + File.c
+        if i in ns.avil:
+            ns.avil[i] = min(ns.avil[i], self.t + File.r)
+        else:
+            ns.avil[i] = self.t + File.r
+
+
 
 # inp: the input file as a single string
 # out: the answer file produced by your solver, as a single string
@@ -57,12 +83,21 @@ def parse(inp):
 def score(inp, out):
     ns = parse(inp)
     itr = (line for line in out.split('\n'))
-    # TODO: implement
-
-    if __name__ == '__main__' and args.s:
-        show(out)
-
-    return 0
+    Srvs = [Server() for _ in range(ns.S)]
+    E = ni(itr)
+    for _ in range(E):
+        name, s_id = next(itr).split()
+        s_id = int(s_id)
+        f_id = ns.name2id[name]
+        Srvs[s_id].add_compilation(f_id, ns)
+    tot = 0
+    for targ in ns.targets:
+        targ_id = ns.name2id[targ.name] 
+        if targ_id in ns.avil:
+            time = ns.avil[targ_id] - ns.compilable[targ_id].r
+            if time <= targ.d:
+                tot += targ.g - time + targ.d 
+    return tot
 
 
 def get_args():
