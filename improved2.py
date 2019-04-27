@@ -61,13 +61,17 @@ def solve(seed, inp, log):
             used[server_id].sort()
         return False
     picked = 0
-    while ns.targets:
-        print 'Number of targets left: {}'.format(len(ns.targets))
-        best = 0
+    #bjorn = 15
+    bjorn=seed
+    tgs1 = ns.targets[:bjorn]
+    tgs2 = ns.targets[bjorn:]
+    while tgs1:
+        print 'Number of targets left: {}'.format(len(tgs1))
+        best = INF
         best_ccf, best_cu = [],[]
         best_target = None
         torem = []
-        for target in ns.targets:
+        for target in tgs1:
             comp = target.get_comp(ns)
             all_deps = sorted(list(comp.deps))
             cur_used = [] #(server,(interval))
@@ -79,21 +83,56 @@ def solve(seed, inp, log):
                 fail &= update_best_server(dep_comp)
             fail &= update_best_server(comp)
             finish_time = min([cur_comp_files[s][comp.i] for s in range(ns.S)])
+            srt = finish_time
             if finish_time > target.d: fail = True
             reset(cur_used)
             if fail:
                 torem.append(target)
-            elif target.d - finish_time > best:
-                best,best_ccf,best_cu,best_target = finish_time,cur_comp_files,cur_used,target
-        if best != 0:
+            elif srt < best:
+                best,best_ccf,best_cu,best_target = srt,cur_comp_files,cur_used,target
+        if best != INF:
             comp_files = best_ccf
             for server,interval,dep_comp in best_cu:
                 used[server].append(interval)
                 used[server].sort()
                 out_ish[server][interval] = dep_comp
-            ns.targets.remove(best_target)
+            tgs1.remove(best_target)
             picked += 1
-        for rm in torem: ns.targets.remove(rm)
+        for rm in torem: tgs1.remove(rm)
+    while tgs2:
+        print 'Number of targets left: {}'.format(len(tgs2))
+        best = INF
+        best_ccf, best_cu = [],[]
+        best_target = None
+        torem = []
+        for target in tgs2:
+            comp = target.get_comp(ns)
+            all_deps = sorted(list(comp.deps))
+            cur_used = [] #(server,(interval))
+            cur_comp_files = [list(x) for x in comp_files]
+
+            fail = False
+            for dep in all_deps:
+                dep_comp = ns.compilable[dep]
+                fail &= update_best_server(dep_comp)
+            fail &= update_best_server(comp)
+            finish_time = min([cur_comp_files[s][comp.i] for s in range(ns.S)])
+            srt = finish_time
+            if finish_time > target.d: fail = True
+            reset(cur_used)
+            if fail:
+                torem.append(target)
+            elif srt < best:
+                best,best_ccf,best_cu,best_target = srt,cur_comp_files,cur_used,target
+        if best != INF:
+            comp_files = best_ccf
+            for server,interval,dep_comp in best_cu:
+                used[server].append(interval)
+                used[server].sort()
+                out_ish[server][interval] = dep_comp
+            tgs2.remove(best_target)
+            picked += 1
+        for rm in torem: tgs2.remove(rm)
     out = []
     for server in range(ns.S):
         for interval in out_ish[server]:
@@ -101,6 +140,8 @@ def solve(seed, inp, log):
     out.sort()
     out2 = [(o[1],o[2]) for o in out]
     out = out2
+    assert len(out)==len(set(out)),'DUBBLETTER'
+
     #print out
     print len(out)
     out2 = [str(len(out))] + [' '.join(map(str,o)) for o in out]

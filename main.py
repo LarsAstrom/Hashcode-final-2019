@@ -53,7 +53,7 @@ if __name__ == '__main__':
         log.info('seed: {}'.format(args.seed))
         run(int(args.seed))
     else:
-        for i in range(args.iterations):
-            seed = ri(0, 10**6 - 1)
+        for seed in range(1,30):
+            i = seed
             log.info('seed:  {:<6}, test#: {}'.format(seed, i))
             run(seed)
