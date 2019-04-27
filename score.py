@@ -100,12 +100,15 @@ def score(inp, out):
         f_id = ns.name2id[name]
         Srvs[s_id].add_compilation(f_id, ns)
     tot = 0
+    numtaken=0
     for targ in ns.targets:
-        targ_id = ns.name2id[targ.name] 
+        targ_id = ns.name2id[targ.name]
         if targ_id in ns.avil:
             time = ns.avil[targ_id] - ns.compilable[targ_id].r
             if time <= targ.d:
-                tot += targ.g - time + targ.d 
+                numtaken+=1
+                tot += targ.g - time + targ.d
+    print "numtaken:", numtaken
     return tot
 
 
