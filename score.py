@@ -23,12 +23,15 @@ def nl(itr):
     return [int(v) for v in next(itr).split()]
 
 class Compilable:
-    def __init__(self, i, name, c, r, deps):
+    def __init__(self, i, name, c, r, deps, ns):
         self.i = i
         self.name = name
         self.c = c
         self.r = r
-        self.deps = deps
+        self.deps = set(deps)
+        for d in deps:
+            self.deps |= ns.compilable[d].deps
+
 class Target:
     def __init__(self, name, d, g):
         self.name = name
@@ -45,7 +48,7 @@ def parse(inp):
         name, c, r = next(itr).split()
         ns.name2id[name] = i
         deps = [ns.name2id[n] for n in next(itr).split()[1:]]
-        ns.compilable.append(Compilable(i, name, int(c), int(r), deps))
+        ns.compilable.append(Compilable(i, name, int(c), int(r), deps, ns))
     ns.targets = []
     for i in range(ns.T):
         name, d, g = next(itr).split()
