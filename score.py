@@ -64,9 +64,10 @@ def parse(inp):
     return ns
 
 class Server:
-    def __init__(self):
+    def __init__(self, i):
         self.t = 0
         self.compiled = set()
+        self.id = i
     def add_compilation(self, i, ns):
         ok = True
         start = self.t
@@ -91,7 +92,7 @@ class Server:
 def score(inp, out):
     ns = parse(inp)
     itr = (line for line in out.split('\n'))
-    Srvs = [Server() for _ in range(ns.S)]
+    Srvs = [Server(i) for i in range(ns.S)]
     E = ni(itr)
     for _ in range(E):
         name, s_id = next(itr).split()
