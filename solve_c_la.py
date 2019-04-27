@@ -118,7 +118,11 @@ def solve(seed, inp, log):
         used[server].append(interval)
         out_ish[server][interval] = file
 
-    ns.targets.sort(key=lambda x:x.d)
+    def totalTime(target):
+        File = ns.compilable[ns.name2id[target.name]]
+        return sum(ns.compilable[dep].c for dep in File.deps)
+    ns.targets.sort(key=totalTime)
+    #ns.targets.sort(key=lambda x:x.d) current best
 
     def reset(cur_used):
         for server,interval,_ in cur_used:
