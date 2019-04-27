@@ -19,9 +19,9 @@ def test(inp):
         F = t.get_comp(ns)
         deps.append((len(F.deps), t.i, t.g, t.d))
     print "C: {}, T: {}, S: {}, sumG: {}, maxD: {}".format(ns.C,ns.T,ns.S,sumg, maxd)
-    deps.sort()
-    for d in deps[:20]:
-        print(d)
+    deps.sort(key=lambda x: x[-1])
+    for d in deps:
+        print d
     # TODO: Write the tests to print given inp.
     # Use parse from score, or write your own (simple_parse)
 
