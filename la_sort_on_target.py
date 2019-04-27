@@ -14,7 +14,10 @@ def solve(seed, inp, log):
     out_ish = {s:{} for s in range(ns.S)}
     comp_files = [[INF]*ns.C for _ in range(ns.S)] #comp_files[server][file] = time_for_avail
     used = [[] for _ in range(ns.S)] #used[server] = [(intervals when used)]
-    ns.targets.sort(key=lambda x:x.d)
+    def totalTime(target):
+        File = ns.compilable[ns.name2id[target.name]]
+        return sum(ns.compilable[dep].c for dep in File.deps)
+    ns.targets.sort(key=totalTime)
     def is_compable(comp,s,t):
         for dep in comp.orig_deps:
             if cur_comp_files[s][dep]>t: return False
