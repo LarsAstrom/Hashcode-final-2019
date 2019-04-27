@@ -59,7 +59,7 @@ class Server:
     def __init__(self):
         self.t = 0
         self.compiled = set()
-    def add_compilation(i, ns):
+    def add_compilation(self, i, ns):
         ok = True
         start = self.t
         File = ns.compilable[i]
