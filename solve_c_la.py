@@ -113,9 +113,6 @@ def solve(seed, inp, log):
         used[server].append(interval)
         out_ish[server][interval] = file
 
-    def totalTime(target):
-        File = ns.compilable[ns.name2id[target.name]]
-        return sum(ns.compilable[dep].c for dep in File.deps)
     #ns.targets.sort(key=lambda x: -x.d)
     ns.targets.sort(key=lambda x:x.d) #current best
     sz = 5
