@@ -14,7 +14,13 @@ def solve(seed, inp, log):
     out_ish = {s:{} for s in range(ns.S)}
     comp_files = [[INF]*ns.C for _ in range(ns.S)] #comp_files[server][file] = time_for_avail
     used = [[] for _ in range(ns.S)] #used[server] = [(intervals when used)]
-    ns.targets.sort(key=lambda x:x.g)
+    '''
+    def totalTime(target):
+        File = ns.compilable[ns.name2id[target.name]]
+        return sum(ns.compilable[dep].c for dep in File.deps)
+    ns.targets.sort(key=totalTime)
+    '''
+    ns.targets.sort(key=lambda x:-x.d)
     def is_compable(comp,s,t):
         for dep in comp.orig_deps:
             if cur_comp_files[s][dep]>t: return False
@@ -24,7 +30,8 @@ def solve(seed, inp, log):
         for sti,eni in used[server_id]:
             for x in range(st,sti-comp.c+1):
                 if is_compable(comp,server_id,x):
-                    return x
+                    #return x current best
+                    return sti-comp.c
             st = eni
         for x in range(st,last_t-comp.c+1):
             if is_compable(comp,server_id,x):
@@ -34,13 +41,14 @@ def solve(seed, inp, log):
         for server,int,_ in cur_used:
             used[server].remove(int)
     for targ_ii,target in enumerate(ns.targets):
+        if ((targ_ii+1)*100/ns.T)%5 == 0 and ((targ_ii)*100/ns.T)%5 != 0:
+            print '{} % of targets done'.format(((targ_ii+1)*100/ns.T))
         comp = target.get_comp(ns)
         all_deps = sorted(list(comp.deps))
         cur_used = [] #(server,(interval))
         cur_comp_files = [list(x) for x in comp_files]
         fail = False
         for dep_ii,dep in enumerate(all_deps):
-            print 'Target {} out of {}. Dep {} out of {}.'.format(targ_ii+1,ns.T,dep_ii+1,len(all_deps))
             best,server_id = INF,-1
             dep_comp = ns.compilable[dep]
             for server in range(ns.S):
@@ -83,6 +91,7 @@ def solve(seed, inp, log):
                 cur_used.append((server_id,(best,best+comp.c),comp))
                 used[server_id].append((best,best+comp.c))
                 used[server_id].sort()
+        if cur_comp_files[server_id][comp.i] > target.d: fail = True
         if fail:
             reset(cur_used)
         else:
@@ -96,8 +105,8 @@ def solve(seed, inp, log):
     out.sort()
     out2 = [(o[1],o[2]) for o in out]
     out = out2
-    print out
+    #print out
     print len(out)
     out2 = [str(len(out))] + [' '.join(map(str,o)) for o in out]
-    print '\n'.join(out2)
+    #print '\n'.join(out2)
     return '\n'.join(out2)
